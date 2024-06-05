@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"log"
 	"math/rand"
 	"os"
@@ -21,7 +22,8 @@ func generateRandomNumber(n int) string {
 }
 
 func main() {
-	clientOptions, err := app.ParseClientOptionFlags(os.Args[1:])
+	set := flag.NewFlagSet("start", flag.ExitOnError)
+	clientOptions, err := app.ParseClientOptionFlags(set, os.Args[1:])
 	if err != nil {
 		log.Fatalf("Invalid arguments: %v", err)
 	}
@@ -33,12 +35,12 @@ func main() {
 
 	defer c.Close()
 
-	employeeInput := app.EmployeeInput{
-		EmployeeName: "John Doe",
-	}
+	// make workflow ID/name "employee" + a 6 digit random number
+	workflowID := "employee-" + generateRandomNumber(6)
 
-	// make workflow ID "employee" + a 6 digit random number
-	workflowID := "employee" + generateRandomNumber(6)
+	employeeInput := app.EmployeeInput{
+		EmployeeName: workflowID,
+	}
 
 	options := client.StartWorkflowOptions{
 		ID:        workflowID,

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"os"
 
@@ -12,7 +13,8 @@ import (
 
 // @@@SNIPSTART temporal-employee-app-access-go-worker
 func main() {
-	clientOptions, err := app.ParseClientOptionFlags(os.Args[1:])
+	set := flag.NewFlagSet("worker", flag.ExitOnError)
+	clientOptions, err := app.ParseClientOptionFlags(set, os.Args[1:])
 	if err != nil {
 		log.Fatalf("Invalid arguments: %v", err)
 	}
@@ -26,8 +28,8 @@ func main() {
 
 	// This worker hosts both Workflow and Activity functions.
 	w.RegisterWorkflow(app.EmployeeAppAccessWorkflow)
-	w.RegisterActivity(app.GrantPermission)
-	w.RegisterActivity(app.RevokePermission)
+	w.RegisterActivity(app.GrantAccess)
+	w.RegisterActivity(app.RevokeAccess)
 
 	// Start listening to the Task Queue.
 	err = w.Run(worker.InterruptCh())

@@ -25,8 +25,8 @@ func Test_SuccessfulEmployeeAppAccessWorkflow(t *testing.T) {
 	}
 
 	// Mock activity implementation
-	env.OnActivity(GrantPermission, mock.Anything, permissionInput).Return(nil)
-	env.OnActivity(RevokePermission, mock.Anything, permissionInput).Return(nil)
+	env.OnActivity(GrantAccess, mock.Anything, permissionInput).Return(nil)
+	env.OnActivity(RevokeAccess, mock.Anything, permissionInput).Return(nil)
 
 	env.ExecuteWorkflow(EmployeeAppAccessWorkflow, employeeInput)
 	require.True(t, env.IsWorkflowCompleted())
@@ -49,8 +49,8 @@ func Test_GrantPermissionFailedWorkflow(t *testing.T) {
 	}
 
 	// Mock activity implementation
-	env.OnActivity(GrantPermission, mock.Anything, permissionInput).Return(errors.New("unable to grant permission"))
-	env.OnActivity(RevokePermission, mock.Anything, permissionInput).Return(nil)
+	env.OnActivity(GrantAccess, mock.Anything, permissionInput).Return(errors.New("unable to grant permission"))
+	env.OnActivity(RevokeAccess, mock.Anything, permissionInput).Return(nil)
 
 	env.ExecuteWorkflow(EmployeeAppAccessWorkflow, employeeInput)
 	require.True(t, env.IsWorkflowCompleted())

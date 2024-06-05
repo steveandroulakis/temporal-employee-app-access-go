@@ -14,11 +14,10 @@ type PermissionInput struct {
 	Expiry          time.Duration
 }
 
-func GrantPermission(ctx context.Context, input PermissionInput) error {
+func GrantAccess(ctx context.Context, employeeName string, applicationName string, permission string, expiry int64) error {
 	// Log statement to indicate activity execution
-	activity.GetLogger(ctx).Info("Granting permission", "EmployeeName",
-		input.EmployeeName, "ApplicationName", input.ApplicationName, "Permission",
-		input.Permission, "Expiry", input.Expiry)
+	activity.GetLogger(ctx).Info("Granting access", "EmployeeName", employeeName,
+		"ApplicationName", applicationName, "Permission", permission, "Expiry", expiry)
 
 	// Simulate work by sleeping
 	time.Sleep(2 * time.Second)
@@ -27,11 +26,10 @@ func GrantPermission(ctx context.Context, input PermissionInput) error {
 	return nil
 }
 
-func RevokePermission(ctx context.Context, input PermissionInput) error {
+func RevokeAccess(ctx context.Context, employeeName string, applicationName string) error {
 	// Log statement to indicate activity execution
-	activity.GetLogger(ctx).Info("Revoking permission", "EmployeeName",
-		input.EmployeeName, "ApplicationName", input.ApplicationName,
-		"Permission", input.Permission)
+	activity.GetLogger(ctx).Info("Revoking access", "EmployeeName", employeeName,
+		"ApplicationName", applicationName)
 
 	// Simulate work by sleeping
 	time.Sleep(2 * time.Second)

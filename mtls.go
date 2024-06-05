@@ -13,9 +13,8 @@ import (
 // ParseClientOptionFlags parses the given arguments into client options. In
 // some cases a failure will be returned as an error, in others the process may
 // exit with help info.
-func ParseClientOptionFlags(args []string) (client.Options, error) {
-	// Parse args
-	set := flag.NewFlagSet("hello-world-mtls", flag.ExitOnError)
+func ParseClientOptionFlags(set *flag.FlagSet, args []string) (client.Options, error) {
+	// Define client options flags
 	targetHost := set.String("target-host", "localhost:7233", "Host:port for the server")
 	namespace := set.String("namespace", "default", "Namespace for the server")
 	serverRootCACert := set.String("server-root-ca-cert", "", "Optional path to root server CA cert")
@@ -23,6 +22,7 @@ func ParseClientOptionFlags(args []string) (client.Options, error) {
 	clientKey := set.String("client-key", "", "Required path to client key")
 	serverName := set.String("server-name", "", "Server name to use for verifying the server's certificate")
 	insecureSkipVerify := set.Bool("insecure-skip-verify", false, "Skip verification of the server's certificate and host name")
+
 	if err := set.Parse(args); err != nil {
 		return client.Options{}, fmt.Errorf("failed parsing args: %w", err)
 	} else if *clientCert == "" || *clientKey == "" {
