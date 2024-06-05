@@ -145,20 +145,28 @@ func EmployeeAppAccessWorkflow(ctx workflow.Context, input EmployeeInput) error 
 
 			// If the permission has an expiry, set a timer to expire it
 			if permission.Expiry > 0 {
-				expiryTimerCtx, cancel := workflow.WithCancel(ctx)
-				signals.Timers[app] = cancel
-				workflow.Go(ctx, func(ctx workflow.Context) {
-					_ = workflow.NewTimer(expiryTimerCtx, permission.Expiry).Get(ctx, nil)
-					signals.SignalQueue.Send(ctx, SignalEvent{
-						Type: "expire",
-						Permission: ApplicationPermission{
-							ApplicationName: app,
-							Permission:      permission.Permission,
-							Expiry:          0,
-							Status:          "expired",
-						},
-					})
+
+				childCtx, cancelHandler := workflow.WithCancel(ctx)
+				selector := workflow.NewSelector(ctx)
+
+				timerFuture := workflow.NewTimer(childCtx, permission.Expiry)
+				timerCancelled := false
+
+				selector.AddFuture(timerFuture, func(f workflow.Future) {
+					if !timerCancelled {
+						signals.SignalQueue.Send(ctx, SignalEvent{Type: "expire", Permission: permission})
+					}
 				})
+
+				selector.AddFuture(timerFuture, func(f workflow.Future) {
+					timerCancelled = true
+					// cancel timerFuture
+					cancelHandler()
+				})
+
+				// wait for the timer to fire or be canceled
+				selector.Select(ctx)
+
 			}
 		} else if signalEvent.Type == "revoke" {
 			// If a timer exists for this application, cancel it

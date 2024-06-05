@@ -1,5 +1,7 @@
 # Temporal Go Project Template
 
+# THIS EXAMPLE ISN'T FUNCTIONAL AND SHOULDN'T BE USED
+
 This is a simple project for demonstrating Temporal with the Go SDK.
 
 The full 10-minute tutorial is here: https://learn.temporal.io/getting_started/go/first_program_in_go/
